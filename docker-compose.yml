@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  image:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: sitema-app
+    volumes: 
+      - .:/usr/src/app
+      - '/app/node_modules'
+    tty: true
+    ports: 
+      - 3000:3000
