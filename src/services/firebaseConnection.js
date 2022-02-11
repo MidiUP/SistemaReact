@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signOut, signInWithEmailAndPassword } from "firebase/auth"
 import 'firebase/firestore'
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore"
-import { getDatabase, ref, set } from "firebase/database"
+import { doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore"
+import { getStorage, uploadBytes, ref, getDownloadURL  } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDcEiilOf52XGDlPk_lQTRhaJGMXHYAhyQ",
@@ -18,6 +18,7 @@ const firebaseConfig = {
 export const firebase = initializeApp(firebaseConfig);
 const auth = getAuth(firebase)
 const db = getFirestore(firebase)
+const storage = getStorage(firebase);
 
 export const registerUser = async (email, password) => {
   try {
@@ -63,6 +64,25 @@ export const getUserbyUid = async(uid) => {
     }
   }catch(error){
     return new Promise((resolve, reject) => { reject(new Error()) })
+  }
+}
+
+export const uploadImage = async (uidUser, file, name) => {
+  const storageRef = ref(storage, `images/${uidUser}/${name}`)
+  try{
+    const result = await uploadBytes(storageRef, file)
+    return result
+  }catch(err){
+    return null
+  }
+}
+
+export const downloadImage = async (path) => {
+  try{
+    const url = await getDownloadURL(ref(storage, path))
+    return url
+  }catch(err){
+    return null
   }
 }
 

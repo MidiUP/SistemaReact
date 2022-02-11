@@ -3,7 +3,7 @@ import Header from '../../components/Header'
 import Title from '../../components/Title'
 import './profile.css'
 import avatar from '../../assets/avatar.png'
-import { addDb } from '../../services/firebaseConnection'
+import { addDb, uploadImage, downloadImage } from '../../services/firebaseConnection'
 import { showMessageError } from '../../components/alerts'
 
 import { AuthContext } from '../../contexts/auth'
@@ -23,17 +23,13 @@ export default function Profile() {
     signOut()
   }
 
-  const handleUpload = () => {
-
-  }
-
   const handleFile = (e) => {
-    if(e.target.files[0]){
+    if (e.target.files[0]) {
       const image = e.target.files[0]
-      if(image.type === 'image/jpeg' || image.type === 'image/png'){
+      if (image.type === 'image/jpeg' || image.type === 'image/png') {
         setImageAvatar(image)
         setAvatarUrl(URL.createObjectURL(image))
-      }else{
+      } else {
         showMessageError('Formato inválido', 'Envie uma imagem do tipo PNG ou JPEG')
         setImageAvatar(null)
         return null
@@ -43,17 +39,33 @@ export default function Profile() {
 
   const handleSave = async (e) => {
     e.preventDefault()
-      try{
-        await addDb(user.uid, {avatarUrl: user.avatarUrl, nome})
-        const data = {
-          ...user,
-          nome
-        }
-        setUser(data)
-        storageUser(data)
-      }catch(err){
-        console.log(err);
+    let avatarUrlUpload = null
+    let data
+    try {
+      if (imageAvatar) {
+        await uploadImage(user.uid, imageAvatar, `avatar-${user.uid}`)
+          .then(async () => {
+            await downloadImage(`images/${user.uid}/${`avatar-${user.uid}`}`)
+              .then((res) => {
+                avatarUrlUpload = res
+              })
+          })
       }
+      if(avatarUrlUpload){
+        await addDb(user.uid, { avatarUrl: avatarUrlUpload, nome })
+      }else{
+        await addDb(user.uid, { avatarUrl: user.avatarUrl, nome })
+      }
+      const data = {
+        ...user,
+        nome,
+        avatarUrl: avatarUrlUpload ? avatarUrlUpload : user.avatarUrl
+      }
+      setUser(data)
+      storageUser(data)
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -70,7 +82,7 @@ export default function Profile() {
               <span>
                 <FiUpload color='#fff' size={25} />
               </span>
-              <input type='file' accept='image/*' onChange={handleFile}/><br />
+              <input type='file' accept='image/*' onChange={handleFile} /><br />
               {avatarUrl === null ?
                 <img src={avatar} width='250' height={250} />
                 : <img src={avatarUrl} width='250' height={250} />
@@ -88,7 +100,7 @@ export default function Profile() {
         </div>
 
         <div className='profile--container'>
-              <button className='profile--logout-btn' onClick={logout}>Sair</button>
+          <button className='profile--logout-btn' onClick={logout}>Sair</button>
         </div>
       </div>
 
