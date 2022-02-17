@@ -52,9 +52,9 @@ export default function Profile() {
           })
       }
       if(avatarUrlUpload){
-        await addDb(user.uid, { avatarUrl: avatarUrlUpload, nome })
+        await addDb(user.uid, { avatarUrl: avatarUrlUpload, nome }, 'users')
       }else{
-        await addDb(user.uid, { avatarUrl: user.avatarUrl, nome })
+        await addDb(user.uid, { avatarUrl: user.avatarUrl, nome }, 'users')
       }
       const data = {
         ...user,

@@ -49,7 +49,7 @@ export default function AuthProvider({ children }) {
       const uid = newUser.uid
       console.log(newUser);
       try {
-        const doc = await addDb(uid, { nome, avatarUrl: null })
+        const doc = await addDb(uid, { nome, avatarUrl: null }, 'users')
         let data = {  uid, nome, email, avatarUrl: null }
         setUser(data)
         storageUser(data)

@@ -21,8 +21,8 @@ export default function Header() {
           }
         </div>
         <a onClick={() => { navigate('/dashboard') }}> <FiHome color='#FFF' size={24} />Chamados</a>
-        <a onClick={() => { navigate('/customers') }}> <FiHome color='#FFF' size={24} />Clientes</a>
-        <a onClick={() => { navigate('/profile') }}> <FiHome color='#FFF' size={24} />Configurações</a>
+        <a onClick={() => { navigate('/customers') }}> <FiUser color='#FFF' size={24} />Clientes</a>
+        <a onClick={() => { navigate('/profile') }}> <FiSettings color='#FFF' size={24} />Configurações</a>
       </div>
     </>
   )
